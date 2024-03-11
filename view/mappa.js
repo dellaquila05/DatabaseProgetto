@@ -1,10 +1,8 @@
-//import { calcolaDistanza } from "./presenter/calcola.js";
+import { calcolaDistanza } from "./calcola.js";
+const mapDiv = document.getElementById("map");
 const container = document.getElementById("popup");
 const content = document.getElementById("popup-content");
 const closer = document.getElementById("popup-closer");
-const urlGeocode =
-  "https://api.geoapify.com/v1/geocode/search?apiKey=5e8d464f7a6f48f281288c93c1531355&text=%PLACE";
-let data = [];
 let overlay;
 
 function setLayers(map) {
@@ -27,11 +25,11 @@ function setZoom(map, maxDist = 1) {
   if (maxDist < 2) zoom = 8;
   map.getView().setZoom(zoom); // fissa il livello di zoom
 }
-function addMarker(map, point, descrizione) {
+function addMarker(map, point) {
   const feature = new ol.Feature({
     geometry: new ol.geom.Point(ol.proj.fromLonLat(point.lonlat)),
   });
-  feature.name = descrizione;
+  feature.name = point.name;
   const layer = new ol.layer.Vector({
     source: new ol.source.Vector({
       features: [feature],
@@ -39,7 +37,7 @@ function addMarker(map, point, descrizione) {
     style: new ol.style.Style({
       image: new ol.style.Icon({
         anchor: [0.5, 1],
-        crossOrigin: descrizione,
+        crossOrigin: "anonymous",
         src: "https://docs.maptiler.com/openlayers/default-marker/marker-icon.png",
       }),
     }),
@@ -80,11 +78,53 @@ function initOverlay(map, points) {
   });
 }
 
-// create map
-const map = new ol.Map({ target: document.querySelector(".map") });
+let markers = [];
+//bottone che aggiunge un marcatore alla mappa
+/*button.onclick = () => {
+  let marker = {
+    lonlat: [longitudine.value, latitudine.value],
+    name: nomeLuogo.value,
+  };
+  addMarker(map, marker);
+  markers.push(marker);
+  let distanzaMax = 0;
+  markers.forEach((marker) => {
+    let distanza = calcolaDistanza(marker.lonlat, [12.4963655, 41.9027835]);
+    if (distanzaMax < distanza) {
+      distanzaMax = distanza;
+    }
+  });
+  setZoom(map, distanzaMax);
+};
+*/
+let map = new ol.Map({ target: document.querySelector(".map") });
 setLayers(map);
-setCenter(map, [9.0915, 45.2765]);
-
-// Leggo i dati dal server
-
+setCenter(map, [12.4963655, 41.9027835]);
 initOverlay(map);
+
+// carica i dati dalla cache remota
+
+let distanzaMax = 0;
+markers.forEach((marker) => {
+  console.log("marker: ", marker);
+  addMarker(map, marker);
+  let distanza = calcolaDistanza(marker.lonlat, [12.4963655, 41.9027835]);
+  console.log(distanza);
+  if (distanzaMax < distanza) {
+    distanzaMax = distanza;
+  }
+});
+if (distanzaMax < 1) distanzaMax = 1;
+setZoom(map, distanzaMax);
+
+//bottone che elimina tutti i marcatori precedentemente salvati
+/*button2.onclick = () => {
+  mapDiv.innerHTML = "";
+  markers = [];
+  set(markers);
+  map = new ol.Map({ target: document.querySelector(".map") });
+  setLayers(map);
+  setCenter(map, [12.4963655, 41.9027835]);
+  setZoom(map);
+  initOverlay(map);
+};*/
