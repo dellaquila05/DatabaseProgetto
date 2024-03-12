@@ -113,21 +113,7 @@
                 <span role="status">Loading...</span>
               </button>
             </div>
-            <script>
-              /*
-                    script per gestire la visualizzazione del pulsante logIn.
-                    siccome tutte le query possono richiedere del tempo ad eseguirsi
-                    */
-              buttonLogin.onclick = () => {
-                if (user.value != "" && password.value != "") {
-                  private.classList.remove("d-none");
-                  public.classList.add("d-none");
-                }
-                //alla pressione del pulsante logIn
-                login.classList.add("d-none"); //evito che l'utente prema il pulsante due volte di fila facendolo scomparire
-                loading.classList.remove("d-none"); //e facendo apparire un pulsante disabilitato con all'interno uno spinner di bootstrap
-              };
-            </script>
+            
           </div>
         </form>
       </div>
@@ -156,7 +142,7 @@
                     </div>
                     <div class="form-group">
                       <label for="ind">Address</label>
-                      <input type="text" class="form-control" id="indirizzo" placeholder="Enter address">
+                      <input type="text" class="form-control" id="indirizzo" placeholder="Enter address ex: Viale assunta 148 Cernusco sul Naviglio">
                     </div>
                     <div class="form-group">
                       <label for="descr">Description</label>
@@ -179,5 +165,6 @@
       <table id="tabella" class="table table-dark table-hover" style="width:100%">
       </table>
     </div>
+    <script src="admin.js" type="module"></script>
   </body>
 </html>

@@ -3,11 +3,52 @@ const inserisci = document.getElementById("inserisci");
 const tabella = document.getElementById("tabella");
 const nome = document.getElementById("nome");
 const indirizzo = document.getElementById("indirizzo");
+const pass = document.getElementById("password");
+const user = document.getElementById("user");
+const buttonLogin = document.getElementById("buttonLogin");
+const divLogin = document.getElementById("public");
+const divAdmin = document.getElementById("private");
+const divLoginButton = document.getElementById("login");
+const loading = document.getElementById("loading");
 const descrizione = document.getElementById("descrizione");
 const tableHeader =
   "<tr> <th> Name </th> <th>Address </th> <th>Description</th> </tr>";
 
+const sendDati = (user, pass) => {
+  return new Promise((resolve, reject) => {
+    fetch("/login", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        username: user,
+        password: pass,
+      }),
+    })
+      .then((response) => response.json())
+      .then((json) => {
+        resolve(json);
+      });
+  });
+};
 
+buttonLogin.onclick = () => {
+  divLoginButton.classList.add("d-none"); //evito che l'utente prema il pulsante due volte di fila facendolo scomparire
+  loading.classList.remove("d-none"); //faccio comparire un pulsante disabilitato che possiede uno spinner di bootstrap
+  if (user.value !== "" && pass.value !== "") {
+    sendDati(user.value, pass.value).then((json) => {
+      if (json.result === true) {
+        divLogin.classList.add("d-none");
+        divAdmin.classList.remove("d-none");
+      } else if (json.result === false) {
+        alert("Le credenziali inserite non sono corrette.");
+        divLoginButton.classList.remove("d-none");
+        loading.classList.add("d-none");
+      }
+    });
+  }
+};
 const table = `
   <tr>
     <td >%NAME</td>
@@ -26,36 +67,13 @@ const callRemote = (url, callback) => {
   });
 };
 //Togliere il commento alla riga sotto per azzerare le strutture memorizzate in cache
-//saveCache(strutture, "strutture")
 
 indietro.onclick = () => {
   window.location.href = "index.html";
 };
-inserisci.onclick = () => {
-  if (nome.value !== "" && indirizzo.value !== "" && descrizione.value !== "") {
-    // cerco le coordinate dell'indirizzo
-    let url = urlGeocode.replace("%PLACE", indirizzo.value);
-    let point = {};
-    callRemote(url, (result) => {
-      let features = result.features;
-      let res = features[0];
-      point = {
-        lonlat: [res.properties.lon, res.properties.lat],
-      };
-      // ora che ho le coordinate salvo l'indirizzo
-      strutture.push({
-        nome: nome.value,
-        indirizzo: indirizzo.value,
-        descrizione: descrizione.value,
-        lonlat: point,
-      });
-    });
-  }
-};
-
 const render = () => {
+  console.log(strutture);
   if (strutture) {
-    console.log("strutture", strutture);
     htmlTab = tableHeader;
     strutture.forEach((element) => {
       let temp_table = table;
@@ -65,6 +83,31 @@ const render = () => {
         .replace("%DESCRIPTION", element.descrizione);
     });
     tabella.innerHTML = htmlTab;
+  }
+};
+
+inserisci.onclick = () => {
+  if (nome.value !== "" && indirizzo.value !== "" && descrizione.value !== "") {
+    console.log("ciao");
+    // cerco le coordinate dell'indirizzo DA USARE PER CREAZIONE MARKER
+    let url = urlGeocode.replace("%PLACE", indirizzo.value);
+    let point = {};
+    callRemote(url, (result) => {
+      let features = result.features;
+      let res = features[0];
+      point = {
+        lon: res.properties.lon,
+        lat: res.properties.lat,
+      };
+      // ora che ho le coordinate salvo l'indirizzo
+      strutture.push({
+        nome: nome.value,
+        indirizzo: indirizzo.value,
+        descrizione: descrizione.value,
+        lonlat: point,
+      });
+      render();
+    });
   }
 };
 render();

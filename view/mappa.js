@@ -1,4 +1,4 @@
-import { calcolaDistanza } from "./calcola.js";
+//import { calcolaDistanza } from "../presenter/calcola.js";
 const mapDiv = document.getElementById("map");
 const container = document.getElementById("popup");
 const content = document.getElementById("popup-content");
