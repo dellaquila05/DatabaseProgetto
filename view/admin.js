@@ -14,6 +14,24 @@ const descrizione = document.getElementById("descrizione");
 const tableHeader =
   "<tr> <th> Name </th> <th>Address </th> <th>Description</th> </tr>";
 
+const sendStrutture = (strutture) => {
+  return new Promise((resolve, reject) => {
+    fetch("/answers", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        strutture: strutture,
+      }),
+    })
+      .then((response) => response.json())
+      .then((json) => {
+        resolve(json);
+      });
+  });
+};
+
 const sendDati = (user, pass) => {
   return new Promise((resolve, reject) => {
     fetch("/login", {
@@ -95,18 +113,28 @@ inserisci.onclick = () => {
     callRemote(url, (result) => {
       let features = result.features;
       let res = features[0];
-      point = {
-        lon: res.properties.lon,
-        lat: res.properties.lat,
-      };
-      // ora che ho le coordinate salvo l'indirizzo
-      strutture.push({
-        nome: nome.value,
-        indirizzo: indirizzo.value,
-        descrizione: descrizione.value,
-        lonlat: point,
-      });
-      render();
+      if (res !== undefined) {
+        point = {
+          lon: res.properties.lon,
+          lat: res.properties.lat,
+        };
+        // ora che ho le coordinate salvo l'indirizzo
+        strutture.push({
+          nome: nome.value,
+          indirizzo: indirizzo.value,
+          descrizione: descrizione.value,
+          lonlat: point,
+        });
+
+        sendStrutture(strutture).then((json) => {
+          render();
+          console.log(json);
+        });
+      } else {
+        alert(
+          "L'indirizzo inserito non è valido, controlla di aver scritto un indirizzo esistente",
+        );
+      }
     });
   }
 };
