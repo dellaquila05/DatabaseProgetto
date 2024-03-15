@@ -43,26 +43,29 @@ SELECT * FROM struttura
 };
 
 const insertStructure = (strutture) => {
+  console.log(strutture);
+  console.log(strutture[0].nome);
+
   const template = `
-INSERT INTO struttura (nome,indirizzo,descrizione,lon,lat) FROM utente ("%NOME","%INDIRIZZO","%DESCRIZIONE","%LON" , "%LAT")
+INSERT INTO struttura (nome,indirizzo,descrizione,lon,lat) VALUES ("%NOME","%INDIRIZZO","%DESCRIZIONE","%LON" ,"%LAT")
 `;
   let sql = "";
-  for (let i = 0; i < strutture.length; i++) {
-    sql = template
-      .replace("%NOME", strutture[i].nome)
-      .replace("%INDIRIZZO", strutture[i].indirizzo)
-      .replace("%DESCRIZIONE", strutture[i].descrizione)
-      .replace("%LON", strutture[i].lonlat.lon)
-      .replace("%LAT", strutture[i].lonlat.lat);
-  }
+  sql = template
+    .replace("%NOME", strutture.nome)
+    .replace("%INDIRIZZO", strutture.indirizzo)
+    .replace("%DESCRIZIONE", strutture.descrizione)
+    .replace("%LON", strutture.lon)
+    .replace("%LAT", strutture.lat);
+
+  console.log(sql);
   return executeQuery(sql);
 };
 
-app.get("/structure", (req, res) => {
-    selectStructure().then((json) => {
-      res.json({ result: json });
-    });
+app.get("/strutture", (req, res) => {
+  selectStructure().then((json) => {
+    res.json({ result: json });
   });
+});
 
 app.post("/login", (req, res) => {
   const data = req.body;
@@ -78,7 +81,7 @@ app.post("/login", (req, res) => {
 
 app.post("/structure", (req, res) => {
   const data = req.body;
-  insertStructure(strutture).then((json) => {
+  insertStructure(data).then((json) => {
     console.log("Dentro .then" + JSON.stringify(strutture));
     res.json({ result: "ok" });
   });

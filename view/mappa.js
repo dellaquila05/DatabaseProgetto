@@ -1,6 +1,6 @@
 const load = () => {
   return new Promise((resolve, reject) => {
-    fetch("/structure")
+    fetch("/strutture")
       .then((response) => response.json())
       .then((json) => {
         resolve(json.result);
@@ -18,14 +18,13 @@ L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png", {
 load().then((points) => {
   console.log(points);
 
-  let markerCoordinates = []; 
+  let markerCoordinates = [];
 
   for (let i = 0; i < points.length; i++) {
     let marker = L.marker([points[i].lon, points[i].lat]).addTo(map);
     marker
       .bindPopup("<b>" + points[i].nome + "</b><br>" + points[i].descrizione)
       .openPopup();
-
 
     markerCoordinates.push([points[i].lon, points[i].lat]);
   }

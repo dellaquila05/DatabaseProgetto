@@ -24,6 +24,9 @@
       id="public"
       class="d-flex flex-column min-vh-100 justify-content-center align-items-center"
     >
+      <h1 class="title">Elenco B&B</h1>
+      <h6 class="subtitle mb-5">pagina di amministrazione</h6>
+
       <div class="card" style="width: 20rem">
         <div class="text-center mb-3">
           <svg
@@ -39,9 +42,9 @@
             />
           </svg>
         </div>
-        <form action="#" method="post">
+        <form>
           <div class="card-body">
-            <div class="mb-3">
+            <div id="alert" class="mb-3 d-none">
               <!-- alert per visualizzare i messaggi di errore -->
               <svg xmlns="http://www.w3.org/2000/svg" class="d-none">
                 <symbol
@@ -68,7 +71,7 @@
                 >
                   <use xlink:href="#exclamation-triangle-fill"></use>
                 </svg>
-                <strong id="testoAlert"> </strong>
+                <strong>Login fallita</strong>
                 <button
                   type="button"
                   class="btn-close"
@@ -81,7 +84,13 @@
             <div class="mb-3">
               <!-- form di inserimento -->
               <label for="user" class="form-label">Nome admin</label>
-              <input type="text" class="form-control" id="user" name="user" />
+              <input
+                type="text"
+                class="form-control"
+                id="user"
+                name="user"
+                required
+              />
             </div>
             <div class="mb-3">
               <label for="password" class="form-label">Password</label>
@@ -90,6 +99,7 @@
                 class="form-control"
                 id="password"
                 name="password"
+                required
               />
             </div>
             <div id="login" class="text-center">
@@ -114,19 +124,21 @@
     </div>
 
     <div id="private" class="d-none">
-      <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+      <nav class="navbar navbar-expand-lg bg-body-tertiary">
         <div class="container-fluid">
-          <button id="indietro" type="submit" class="btn btn-primary">
-            Return
-          </button>
+          <a class="navbar-brand" href="#">Admin page</a>
           <!-- Button trigger modal -->
           <button
             type="button"
-            class="btn btn-primary"
+            class="btn btn-success"
             data-bs-toggle="modal"
             data-bs-target="#exampleModal"
           >
             Insert structure
+          </button>
+
+          <button id="indietro" type="button" class="btn btn-danger">
+            Log out
           </button>
 
           <!-- Modal -->
@@ -197,11 +209,7 @@
         <!-- Fine modale -->
       </nav>
 
-      <table
-        id="tabella"
-        class="table table-dark table-hover"
-        style="width: 100%"
-      ></table>
+      <table id="tabella" class="table table-dark table-hover"></table>
     </div>
     <script src="admin.js" type="module"></script>
   </body>

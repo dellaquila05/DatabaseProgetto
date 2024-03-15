@@ -11,12 +11,13 @@ const divAdmin = document.getElementById("private");
 const divLoginButton = document.getElementById("login");
 const loading = document.getElementById("loading");
 const descrizione = document.getElementById("descrizione");
+const alert = document.getElementById("alert");
 const tableHeader =
   "<tr> <th> Name </th> <th>Address </th> <th>Description</th> </tr>";
 
 const sendStrutture = (strutture) => {
   return new Promise((resolve, reject) => {
-    fetch("/answers", {
+    fetch("/structure", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -60,11 +61,15 @@ buttonLogin.onclick = () => {
         divLogin.classList.add("d-none");
         divAdmin.classList.remove("d-none");
       } else if (json.result === false) {
-        alert("Le credenziali inserite non sono corrette.");
-        divLoginButton.classList.remove("d-none");
+        alert.classList.remove("d-none");
         loading.classList.add("d-none");
+        divLoginButton.classList.remove("d-none");
       }
     });
+  } else {
+    alert.classList.remove("d-none");
+    loading.classList.add("d-none");
+    divLoginButton.classList.remove("d-none");
   }
 };
 const table = `
@@ -90,7 +95,6 @@ indietro.onclick = () => {
   window.location.href = "index.html";
 };
 const render = () => {
-  console.log(strutture);
   if (strutture) {
     htmlTab = tableHeader;
     strutture.forEach((element) => {
@@ -109,21 +113,22 @@ inserisci.onclick = () => {
     console.log("ciao");
     // cerco le coordinate dell'indirizzo DA USARE PER CREAZIONE MARKER
     let url = urlGeocode.replace("%PLACE", indirizzo.value);
-    let point = {};
+    let lon = 0;
+    let lat = 0;
     callRemote(url, (result) => {
       let features = result.features;
       let res = features[0];
       if (res !== undefined) {
-        point = {
-          lon: res.properties.lon,
-          lat: res.properties.lat,
-        };
+        lon = res.properties.lon;
+        lat = res.properties.lat;
+
         // ora che ho le coordinate salvo l'indirizzo
         strutture.push({
           nome: nome.value,
           indirizzo: indirizzo.value,
           descrizione: descrizione.value,
-          lonlat: point,
+          lon: lon,
+          lat: lat,
         });
 
         sendStrutture(strutture).then((json) => {
