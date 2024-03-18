@@ -8,6 +8,7 @@ const tHead = `
         <th>Visualizza</th>
       </tr>
   </thead>`;
+
 const template = `
 <tbody>
   <tr>
@@ -16,40 +17,57 @@ const template = `
     <td>%COORDINATE</td>
     <td>%BUTTON</td>
 </tbody>`;
+
 const load = () => {
   return new Promise((resolve, reject) => {
     fetch("/strutture")
       .then((response) => response.json())
       .then((json) => {
         resolve(json.result);
+      })
+      .catch((error) => {
+        reject(error);
       });
   });
 };
 
 let map = L.map("map");
+let mapCentered = false;
 
-L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png", {
-  attribution:
-    '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
-}).addTo(map);
+const centerMap = (points) => {
+  if (!mapCentered) {
+    if (points.length === 1) {
+      map.setView([points[0].lat, points[0].lon], 15);
+      mapCentered = true;
+    } else {
+      const bounds = L.latLngBounds(
+        points.map((point) => [point.lat, point.lon]),
+      );
+      map.fitBounds(bounds);
+      mapCentered = true;
+    }
+  }
+};
 
-load().then((points) => {
-  console.log(points);
+L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png", {}).addTo(map);
+
+const renderPoints = (points) => {
   let html = tHead;
   let markerCoordinates = [];
+  const markers = [];
 
   for (let i = 0; i < points.length; i++) {
-    let marker = L.marker([points[i].lon, points[i].lat]).addTo(map);
+    let marker = L.marker([points[i].lat, points[i].lon]).addTo(map);
     marker
       .bindPopup("<b>" + points[i].nome + "</b><br>" + points[i].descrizione)
       .openPopup();
+    markers.push(marker);
 
     markerCoordinates.push([points[i].lon, points[i].lat]);
-    const coordinate = points[i].lon + ", " + points[i].lat;
     html += template
       .replace("%CODICE", points[i].id)
       .replace("%NAME", points[i].nome)
-      .replace("%COORDINATE", coordinate)
+      .replace("%COORDINATE", points[i].indirizzo)
       .replace(
         "%BUTTON",
         "<button class='btn btn-info' name='visualizza'>Visualizza</button>",
@@ -60,7 +78,19 @@ load().then((points) => {
   const buttons = document.querySelectorAll("button[name=visualizza]");
   buttons.forEach((button, index) => {
     button.onclick = () => {
-      map.setView([points[index].lon, points[index].lat]);
+      map.setView([points[index].lat, points[index].lon]);
+      markers[index].openPopup();
     };
   });
-});
+};
+
+load()
+  .then((points) => {
+    renderPoints(points);
+    console.log(points);
+    // Aggiungi un intervallo che controlla la posizione della mappa ogni secondo
+    setInterval(centerMap(points), 1000);
+  })
+  .catch((error) => {
+    console.error("Error:", error);
+  });

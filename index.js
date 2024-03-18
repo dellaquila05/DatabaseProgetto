@@ -35,6 +35,21 @@ SELECT nome, pass FROM utente
   return executeQuery(sql);
 };
 
+const updateStrutture = (strutture) => {
+  const sql = `
+UPDATE struttura
+SET nome = '${strutture.nome}', indirizzo = '${strutture.indirizzo}',descrizione = '${strutture.descrizione}', lon = '${strutture.lon}', lat = '${strutture.lat}'
+WHERE id = '${strutture.id}'`;
+  return executeQuery(sql);
+};
+
+const dropStrutture = (id) => {
+  const sql = `
+DELETE FROM struttura WHERE id= '${id}';
+`;
+  return executeQuery(sql);
+};
+
 const selectStructure = () => {
   const sql = `
 SELECT * FROM struttura
@@ -46,7 +61,7 @@ const insertStructure = (strutture) => {
   console.log("strutture insert  " + strutture);
 
   const sql = `
-INSERT INTO struttura (nome,indirizzo,descrizione,lon,lat) VALUES ('${strutture.nome}','${strutture.indirizzo}','${strutture.descrizione}','${strutture.lat}' ,'${strutture.lon}')
+INSERT INTO struttura (nome,indirizzo,descrizione,lon,lat) VALUES ('${strutture.nome}','${strutture.indirizzo}','${strutture.descrizione}','${strutture.lon}' ,'${strutture.lat}')
 `;
   console.log("sql " + sql);
   return executeQuery(sql);
@@ -75,6 +90,20 @@ app.post("/structure", (req, res) => {
   console.log("data server " + data);
   insertStructure(data.strutture).then((json) => {
     console.log("Dentro .then" + JSON.stringify(data));
+    res.json({ result: "ok" });
+  });
+});
+
+app.delete('/delete/:id', (req, res) => {
+  const data =req.params.id;
+dropStrutture(data).then((json) => {
+    res.json({ result: "ok" });
+  });
+});
+
+app.put('/update', (req, res) => {
+  const data = req.body;
+    updatetrutture(data).then((json) => {
     res.json({ result: "ok" });
   });
 });
