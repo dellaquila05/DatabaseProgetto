@@ -15,6 +15,16 @@ const alert = document.getElementById("alert");
 const tableHeader =
   "<tr> <th> Name </th> <th>Address </th> <th>Description</th> </tr>";
 
+const load = () => {
+  return new Promise((resolve, reject) => {
+    fetch("/strutture")
+      .then((response) => response.json())
+      .then((json) => {
+        resolve(json.result);
+      });
+  });
+};
+
 const sendStrutture = (strutture) => {
   return new Promise((resolve, reject) => {
     fetch("/structure", {
@@ -95,17 +105,20 @@ indietro.onclick = () => {
   window.location.href = "index.html";
 };
 const render = () => {
-  if (strutture) {
-    htmlTab = tableHeader;
-    strutture.forEach((element) => {
-      let temp_table = table;
-      htmlTab += temp_table
-        .replace("%NAME", element.nome)
-        .replace("%ADDRESS", element.indirizzo)
-        .replace("%DESCRIPTION", element.descrizione);
-    });
-    tabella.innerHTML = htmlTab;
-  }
+  load().then((points) => {
+    strutture = points;
+    if (strutture) {
+      htmlTab = tableHeader;
+      strutture.forEach((element) => {
+        let temp_table = table;
+        htmlTab += temp_table
+          .replace("%NAME", element.nome)
+          .replace("%ADDRESS", element.indirizzo)
+          .replace("%DESCRIPTION", element.descrizione);
+      });
+      tabella.innerHTML = htmlTab;
+    }
+  });
 };
 
 inserisci.onclick = () => {
@@ -131,7 +144,13 @@ inserisci.onclick = () => {
           lat: lat,
         });
 
-        sendStrutture(strutture).then((json) => {
+        sendStrutture({
+          nome: nome.value,
+          indirizzo: indirizzo.value,
+          descrizione: descrizione.value,
+          lon: lon,
+          lat: lat,
+        }).then((json) => {
           render();
           console.log(json);
         });

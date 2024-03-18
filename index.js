@@ -43,21 +43,12 @@ SELECT * FROM struttura
 };
 
 const insertStructure = (strutture) => {
-  console.log(strutture);
-  console.log(strutture[0].nome);
+  console.log("strutture insert  " + strutture);
 
-  const template = `
-INSERT INTO struttura (nome,indirizzo,descrizione,lon,lat) VALUES ("%NOME","%INDIRIZZO","%DESCRIZIONE","%LON" ,"%LAT")
+  const sql = `
+INSERT INTO struttura (nome,indirizzo,descrizione,lon,lat) VALUES ('${strutture.nome}','${strutture.indirizzo}','${strutture.descrizione}','${strutture.lat}' ,'${strutture.lon}')
 `;
-  let sql = "";
-  sql = template
-    .replace("%NOME", strutture.nome)
-    .replace("%INDIRIZZO", strutture.indirizzo)
-    .replace("%DESCRIZIONE", strutture.descrizione)
-    .replace("%LON", strutture.lon)
-    .replace("%LAT", strutture.lat);
-
-  console.log(sql);
+  console.log("sql " + sql);
   return executeQuery(sql);
 };
 
@@ -81,8 +72,9 @@ app.post("/login", (req, res) => {
 
 app.post("/structure", (req, res) => {
   const data = req.body;
-  insertStructure(data).then((json) => {
-    console.log("Dentro .then" + JSON.stringify(strutture));
+  console.log("data server " + data);
+  insertStructure(data.strutture).then((json) => {
+    console.log("Dentro .then" + JSON.stringify(data));
     res.json({ result: "ok" });
   });
 });

@@ -22,18 +22,45 @@
       crossorigin=""
     />
     <style>
+      body,
+      html {
+        max-height: 100%;
+        height: 100%;
+        margin: 0;
+      }
+
+      #container {
+        height: 100%;
+        width: 100%;
+        display: flex;
+      }
+
       #map {
-        height: 400px;
+        width: 80%; 
+        height: 500px; 
+      }
+    
+      #list {
+        width: 50%;
       }
     </style>
   </head>
   <body>
-    <nav class="navbar navbar-expand-lg bg-body-tertiary">
+    <nav class="navbar bg-primary navbar-expand-lg">
       <div class="container-fluid">
-        <a class="navbar-brand" href="#">View Map of B&B</a>
-        <a href="admin.html" class="btn btn-primary">Go to the Admin page</a>     
+        <a class="navbar-brand text-white ms-5" href="#">ViewB&B</a>
+        <a href="admin.html" class="btn btn-light me-5 text-primary"
+          >Admin area</a
+        >
+      </div>
     </nav>
-    <div id="map"></div>
+    <div id="container">
+      <div id="map"></div>
+
+      <div id="list" class="text-center table-responsive m-5">
+        <table class="table table-hover table-dark" id="table"></table>
+      </div>
+    </div>
     <script
       src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
       integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
